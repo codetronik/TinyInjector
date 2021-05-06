@@ -6,32 +6,39 @@
 #include <unistd.h>
 #include "utils.h"
 
-pid_t GetPid(const char* process_name) {
-  if (process_name == NULL) {
-    return -1;
-  }
-  DIR* dir = opendir("/proc");
-  if (dir == NULL) {
-    return -1;
-  }
-  struct dirent* entry;
-  while((entry = readdir(dir)) != NULL) {
-    size_t pid = atoi(entry->d_name);
-    if (pid != 0) {
-      char file_name[30];
-      snprintf(file_name, 30, "/proc/%zu/cmdline", pid);
-      FILE *fp = fopen(file_name, "r");
-      char temp_name[50];
-      if (fp != NULL) {
-        fgets(temp_name, 50, fp);
-        fclose(fp);
-        if (strcmp(process_name, temp_name) == 0) {
-          return pid;
-        }
-      }
+pid_t GetPid(const char* process_name)
+{
+    if (process_name == NULL)
+    {
+        return -1;
     }
-  }
-  return -1;
+    DIR* dir = opendir("/proc");
+    if (dir == NULL)
+    {
+        return -1;
+    }
+    struct dirent* entry;
+    while((entry = readdir(dir)) != NULL)
+    {
+        size_t pid = atoi(entry->d_name);
+        if (pid != 0)
+        {
+            char file_name[30];
+            snprintf(file_name, 30, "/proc/%zu/cmdline", pid);
+            FILE *fp = fopen(file_name, "r");
+            char temp_name[50];
+            if (fp != NULL)
+            {
+                fgets(temp_name, 50, fp);
+                fclose(fp);
+                if (strcmp(process_name, temp_name) == 0)
+                {
+                    return pid;
+                }
+            }
+        }
+    }
+    return -1;
 }
 
 bool IsSelinuxEnabled()
